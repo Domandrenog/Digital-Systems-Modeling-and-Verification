@@ -18,7 +18,7 @@ module gcd (xi, yi, rst, xo, rdy, clk);
 
   always @(posedge clk)
   begin
-  	if (rst == 1'b0)   
+	  if (rst == 1'b0)   // Can be a while with a delay
 	begin
         	x <= xi;
         	y <= yi;
