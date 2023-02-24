@@ -6,7 +6,7 @@
 		Reset - rst - it's "0" while processing the inputs, when the testbench send rst = "1", it's to start to analyse the gcd
 */
 
-module gcd (xi, yi, rst, xo, rdy, clk);
+module gcd_rtl (xi, yi, rst, xo, rdy, clk);
 
   input [15:0] xi, yi;
   input rst, clk;
@@ -30,9 +30,8 @@ module gcd (xi, yi, rst, xo, rdy, clk);
 		begin		
         		if (x != y)
 			begin
-				//for while i need to use blocking (??)
-          			if (y > x)  			begin y <= y - x; end //$display("aqui1: %d e %d",x,y);end//if y greater than x, we need to get a smaller y by y-x
-				else if (x > y) 		begin x <= x - y; end //$display("here: %d e %d",x,y);end //same here
+          			if (y > x) 		y <= y - x;
+				else if (x > y) 	x <= x - y; 
 
 			end
 			else if (x==y)
@@ -43,7 +42,7 @@ module gcd (xi, yi, rst, xo, rdy, clk);
 		end
 		else 
 		begin
-			xo <= 0; //Can be xo <= y;
+			xo <= 0; 
         		rdy <= 1'b1;
 		end
 	end
