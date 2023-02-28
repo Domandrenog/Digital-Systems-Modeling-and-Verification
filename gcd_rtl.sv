@@ -45,8 +45,8 @@ module gcd_rtl #(parameter NBits = 2)
 		end
 		else if (x < 0 || y < 0)
 		begin
-			if(x<0)	x = xi[15] ? -xi : xi;
-			if (y<0)   y = yi[15] ? -yi : yi; 
+			if(x<0)	x = xi[NBits-1] ? -xi : xi;
+			if (y<0)   y = yi[NBits-1] ? -yi : yi; 
 			//$display("%d and %d", x, y);
 		end
 		else 
