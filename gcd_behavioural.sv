@@ -7,14 +7,18 @@
 		Reset - rst - when it's "1", put every variable at 0
 */
 
-module gcd_behavioural (xi, yi, rst, xo, rdy, clk, start);
+module gcd_behavioural #(parameter NBits = 2)
+	(  
+	input [NBits-1:0] xi, yi,
+  	input rst, clk, start,
 
-  input [15:0] xi, yi;
-  input rst, clk, start;
+  	output reg [NBits-1:0] xo,
+  	output reg rdy = 1'b0
 
-  output reg [15:0] xo;
-  output reg rdy = 1'b0;
-  reg signed [15:0] x, y;
+	);
+
+
+  reg signed [NBits-1:0] x, y;
 
 
   always @(posedge clk)
@@ -44,12 +48,12 @@ module gcd_behavioural (xi, yi, rst, xo, rdy, clk, start);
 		end
 		else if (x < 0 || y < 0)
 		begin
-			if(x<0)	x = xi[15] ? -xi : xi;
-			if (y<0)   y = yi[15] ? -yi : yi; 
+			if(x<0)	x = xi[NBits-1] ? -xi : xi;
+			if (y<0)   y = yi[NBits-1] ? -yi : yi; 
 			//$display("%d and %d", x, y);
 		end
 		else 
-		begin
+		begin	
 			xo <= 0; 
         		rdy <= 1'b1;
 		end

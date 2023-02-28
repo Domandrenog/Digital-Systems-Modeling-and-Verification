@@ -7,14 +7,16 @@
 		Reset - rst - when it's "1", put every variable at 0
 */
 
-module gcd_rtl (xi, yi, rst, xo, rdy, clk, start);
+module gcd_rtl #(parameter NBits = 2)
+	(  
+	input [NBits-1:0] xi, yi,
+  	input rst, clk, start,
 
-  input [15:0] xi, yi;
-  input rst, clk, start;
+  	output reg [NBits-1:0] xo,
+  	output reg rdy = 1'b0
 
-  output reg [15:0] xo;
-  output reg rdy = 1'b0;
-  reg signed [15:0] x, y;
+	);
+	reg signed [NBits-1:0] x, y;
 
 
   always @(posedge clk)

@@ -8,9 +8,9 @@ Types of tests:
 	One be 0 - the result will be 0
 	X be greater than Y
 	Y be greater than X
-	Negative Numbers - Add this condition
+	Negative Numbers 
 	Random Numbers
-	Read from a file - Add this condition
+	Read from a file
 */
 
 module gcd_tb;
@@ -18,22 +18,23 @@ module gcd_tb;
   	// Parameters
   	parameter CLK_PERIOD = 10;
   	parameter CICLES = 100;
+	parameter NBits = 26;
 
   	// Inputs
-  	reg [15:0] xi, yi;
+  	reg [NBits-1:0] xi, yi;
   	reg rst, clk, start;
 
   	// Outputs
-  	wire [15:0] xo;
-  	wire [15:0] xo2;
+  	wire [NBits-1:0] xo;
+  	wire [NBits-1:0] xo2;
   	wire rdy;
   	wire rdy2;
 
 
   	//Random Case
-  	reg [14:0] a; //Only use 15 bits, because the 16 bit is to indicate its negative or positive
-  	reg [14:0] b;
-  	reg [15:0] expected;
+  	reg [NBits-2:0] a; //Only use 15 bits, because the 16 bit is to indicate its negative or positive
+  	reg [NBits-2:0] b;
+  	reg [NBits-1:0] expected;
 	integer i;
   	integer totalerrorsrandombeh = 0;
   	integer totalerrorsrandomrtl = 0;
@@ -86,13 +87,13 @@ module gcd_tb;
 
 		// Test case 3: Calculate GCD of 0 numbers
     		$display("Test case 3 : Calculate GCD of 0 Numbers");
-		procedure(0,7);
+		procedure(0,0);
       		//$display("  GCD(%d, %d) = %d", xi, yi, xo);
       		if (xo == 0) $display("	0 Numbers - Test case passed - Behavioral");
       		else begin $display("	0 Numbers - Test case failed: Expected 0, got %d - Behavioral", xo); totalerrorsbeh = totalerrorsbeh +1; $fdisplay(fp2, "Test Case 3 - Error: gcd(%d, %d) = %d, expected 0 - Behavioral", xi, yi, xo); line_number3 = line_number3 + 1; end
       		if (xo2 == 0) $display("	0 Numbers - Test case passed - RTL");
       		else begin $display("	0 Numbers - Test case failed: Expected 0, got %d - RTL", xo2); totalerrorsrtl = totalerrorsrtl +1; $fdisplay(fp2, "Test Case 3 - Error: gcd(%d, %d) = %d, expected 0 - RTL", xi, yi, xo); line_number3 = line_number3 + 1; end
-      
+      		
 	
 		// Test case 4: Calculate GCD of X > Y - 42 and 18
     		$display("Test case 4 : Calculate GCD of X > Y");
@@ -248,7 +249,7 @@ module gcd_tb;
 
 	//Task that execute the reset signal and update the numbers
 	task procedure;
-	input [15:0] x,y;
+	input [NBits-1:0] x,y;
 	begin
 		rst = 1'b1;
 		#1;
@@ -260,16 +261,13 @@ module gcd_tb;
     		// Wait for a few clock cycles
     		# (CLK_PERIOD * 5) start = 1'b1;
 		
-		
-		
 		@(posedge rdy, posedge rdy2); // Both are at same time, I use the ",", because in this version works like a and (&)
 		
-
 	end
 	endtask
 
   	// Instantiate the Unit Under Test (UUT) this case Behavioural
-  	gcd_behavioural beh (
+  	gcd_behavioural #(.NBits(NBits)) beh(
     		.xi(xi),
     		.yi(yi),
     		.rst(rst),
@@ -280,7 +278,7 @@ module gcd_tb;
   	);
 
   	// Instantiate the Unit Under Test (UUT) this case RTL
-  	gcd_rtl rtl (
+  	gcd_rtl #(.NBits(NBits)) rtl (
     		.xi(xi),
     		.yi(yi),
     		.rst(rst),
