@@ -3,30 +3,31 @@
 /* Observations in view of the project:
 	Signals:
 		Ready - rdy - it's only "1" when we find the gcd and "0" while processing it
-		Reset - rst - it's "0" while processing the inputs, when the testbench send rst = "1", it's to start to analyse the gcd
+		Start - start - it's "0" while processing the inputs, when the testbench send start = "1", it's to start to analyse the gcd
+		Reset - rst - when it's "1", put every variable at 0
 */
 
-module gcd_rtl (xi, yi, rst, xo, rdy, clk);
+module gcd_rtl (xi, yi, rst, xo, rdy, clk, start);
 
   input [15:0] xi, yi;
-  input rst, clk;
+  input rst, clk, start;
 
   output reg [15:0] xo;
   output reg rdy = 1'b0;
-  reg [15:0] x, y;
+  reg signed [15:0] x, y;
 
 
   always @(posedge clk)
   begin
-  	if (rst == 1'b0)   
+  	if (start == 1'b0 && rst == 1'b0)   
 	begin
         	x <= xi;
         	y <= yi;
 		rdy <= 0;
       	end 
-    	else 
+    	else if (start == 1'b1 && rst == 1'b0) 
 	begin	
-		if( x != 0 && y != 0) 
+		if( x > 0 && y > 0) 
 		begin		
         		if (x != y)
 			begin
@@ -40,12 +41,25 @@ module gcd_rtl (xi, yi, rst, xo, rdy, clk);
         			rdy <= 1'b1;
 			end
 		end
+		else if (x < 0 || y < 0)
+		begin
+			if(x<0)	x = xi[15] ? -xi : xi;
+			if (y<0)   y = yi[15] ? -yi : yi; 
+			//$display("%d and %d", x, y);
+		end
 		else 
 		begin
 			xo <= 0; 
         		rdy <= 1'b1;
 		end
 	end
+	else if (rst == 1'b1)
+	begin
+		x <= 0;
+        	y <= 0;
+		rdy <= 0;
+	end
+
 
     end
 

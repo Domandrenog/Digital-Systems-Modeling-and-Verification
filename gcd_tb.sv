@@ -21,18 +21,18 @@ module gcd_tb;
 
   	// Inputs
   	reg [15:0] xi, yi;
-  	reg rst, clk;
+  	reg rst, clk, start;
 
   	// Outputs
   	wire [15:0] xo;
   	wire [15:0] xo2;
   	wire rdy;
-  	wire rdy2; //Add restriction in procedure
+  	wire rdy2;
 
 
   	//Random Case
-  	reg [15:0] a;
-  	reg [15:0] b;
+  	reg [14:0] a; //Only use 15 bits, because the 16 bit is to indicate its negative or positive
+  	reg [14:0] b;
   	reg [15:0] expected;
 	integer i;
   	integer totalerrorsrandombeh = 0;
@@ -76,12 +76,12 @@ module gcd_tb;
 
     		// Test case 2: Calculate GCD of  Equal Numbers - 65535 and 65535
     		$display("Test case 2 : Calculate GCD of Equal Numbers");
-    		procedure(65535,65535);
+    		procedure(620,620);
       		//$display("  GCD(%d, %d) = %d", xi, yi, xo);
-      		if (xo == 16'hFFFF) $display("	Equal Numbers - Test case passed - Behavioral");
-      		else begin $display("	Equal Numbers - Test case failed: Expected %d, got %d - Behavioral", 16'hFFFF, xo); totalerrorsbeh = totalerrorsbeh +1; $fdisplay(fp2, "Test Case 2 - Error: gcd(%d, %d) = %d, expected %d - Behavioural", xi, yi, xo, 16'hFFFF); line_number3 = line_number3 + 1; end
-      		if (xo2 == 16'hFFFF) $display("	Equal Numbers - Test case passed - RTL");
-      		else begin $display("	Equal Numbers - Test case failed: Expected %d, got %d - RTL", 16'hFFFF, xo2); totalerrorsrtl = totalerrorsrtl +1; $fdisplay(fp2, "Test Case 2 - Error: gcd(%d, %d) = %d, expected %d - RTL", xi, yi, xo, 16'hFFFF); line_number3 = line_number3 + 1;end
+      		if (xo == 620) $display("	Equal Numbers - Test case passed - Behavioral");
+      		else begin $display("	Equal Numbers - Test case failed: Expected %d, got %d - Behavioral", 620, xo); totalerrorsbeh = totalerrorsbeh +1; $fdisplay(fp2, "Test Case 2 - Error: gcd(%d, %d) = %d, expected %d - Behavioural", xi, yi, xo, 620); line_number3 = line_number3 + 1; end
+      		if (xo2 == 620) $display("	Equal Numbers - Test case passed - RTL");
+      		else begin $display("	Equal Numbers - Test case failed: Expected %d, got %d - RTL", 620, xo2); totalerrorsrtl = totalerrorsrtl +1; $fdisplay(fp2, "Test Case 2 - Error: gcd(%d, %d) = %d, expected %d - RTL", xi, yi, xo, 620); line_number3 = line_number3 + 1;end
 
 
 		// Test case 3: Calculate GCD of 0 numbers
@@ -113,17 +113,15 @@ module gcd_tb;
       		if (xo2 == 16'h6) $display("	Y > X - Test case passed - RTL");
       		else begin $display("	Y > X - Test case failed: Expected %d, got %d - RTL", 16'h6, xo2); totalerrorsrtl = totalerrorsrtl +1; $fdisplay(fp2, "Test Case 5 - Error: gcd(%d, %d) = %d, expected %d - RTL", xi, yi, xo, 16'h6); line_number3 = line_number3 + 1;  end
 		
-		/* Is reading like the unsigned, being signes, so the result is incorrect
-
 		// Test case 6: Calculate GCD of Negative Numbers - I use the abs
     		$display("Test case 6 : Calculate GCD of Negative Numbers - Using the abs");
-       		procedure(-18,42);
+       		procedure(-18,-42);
       		//$display("  GCD(%d, %d) = %d", xi, yi, xo);
       		if (xo == 16'h6) $display("	Negative Numbers - Test case passed - Behavioral");
       		else begin $display("	Negative Numbers - Test case failed: Expected %d, got %d - Behavioral", 16'h6, xo); totalerrorsbeh = totalerrorsbeh +1; end
       		if (xo2 == 16'h6) $display("	Negative Numbers - Test case passed - RTL");
       		else begin $display("	Negative Numbers - Test case failed: Expected %d, got %d - RTL", 16'h6, xo2); totalerrorsrtl = totalerrorsrtl +1; end
-    		*/
+    		
 
 
     		// Test case 7: Calculate GCD of Random Numbers
@@ -133,7 +131,7 @@ module gcd_tb;
       			// Generate random input values
       			a = $random;
       			b = $random;
-			expected = 0; //doesn't work if have zeros have a option
+			expected = 0;
       		
 			procedure(a, b);
 
@@ -252,12 +250,15 @@ module gcd_tb;
 	task procedure;
 	input [15:0] x,y;
 	begin
+		rst = 1'b1;
+		#1;
+		rst = 1'b0;
 		xi = x;
     		yi = y; 
-		rst = 1'b0;
+		start = 1'b0;
 
     		// Wait for a few clock cycles
-    		# (CLK_PERIOD * 5) rst = 1'b1;
+    		# (CLK_PERIOD * 5) start = 1'b1;
 		
 		
 		
@@ -274,7 +275,8 @@ module gcd_tb;
     		.rst(rst),
     		.xo(xo),
     		.rdy(rdy),
-    		.clk(clk)
+    		.clk(clk),
+		.start(start)
   	);
 
   	// Instantiate the Unit Under Test (UUT) this case RTL
@@ -284,7 +286,8 @@ module gcd_tb;
     		.rst(rst),
     		.xo(xo2),
     		.rdy(rdy2),
-    		.clk(clk)
+    		.clk(clk),
+		.start(start)
   	);
 
 endmodule
