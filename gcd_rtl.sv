@@ -34,10 +34,10 @@ module gcd_rtl #(parameter NBits = 2)
         		if (x != y)
 			begin
           			if (y > x) 		y <= y - x;
-				else if (x > y) 	x <= x - y; 
+				else 			x <= x - y; 
 
 			end
-			else if (x==y)
+			else
 			begin
         			xo <= x; //Can be xo <= y;
         			rdy <= 1'b1;
@@ -45,8 +45,8 @@ module gcd_rtl #(parameter NBits = 2)
 		end
 		else if (x < 0 || y < 0)
 		begin
-			if(x<0)	x = xi[NBits-1] ? -xi : xi;
-			if (y<0)   y = yi[NBits-1] ? -yi : yi; 
+			if(x<0)	x = -xi;
+			if (y<0)   y = -yi; 
 			//$display("%d and %d", x, y);
 		end
 		else 
@@ -55,7 +55,7 @@ module gcd_rtl #(parameter NBits = 2)
         		rdy <= 1'b1;
 		end
 	end
-	else if (rst == 1'b1)
+	else
 	begin
 		x <= 0;
         	y <= 0;

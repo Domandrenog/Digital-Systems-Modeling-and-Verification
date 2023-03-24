@@ -38,7 +38,7 @@ module gcd_behavioural #(parameter NBits = 2)
 			begin
 				//for while i need to use blocking, only if I not use a delay!!
           			if (y > x)  		y = y - x;  
-				else if (x > y) 	x = x - y; 
+				else 		 	x = x - y; 
 				
 				@(posedge clk); //#10; - It's the same
 
@@ -48,8 +48,8 @@ module gcd_behavioural #(parameter NBits = 2)
 		end
 		else if (x < 0 || y < 0)
 		begin
-			if(x<0)	x = xi[NBits-1] ? -xi : xi;
-			if (y<0)   y = yi[NBits-1] ? -yi : yi; 
+			if(x<0)	x = -xi;
+			if (y<0)   y = -yi; 
 			//$display("%d and %d", x, y);
 		end
 		else 
@@ -58,7 +58,7 @@ module gcd_behavioural #(parameter NBits = 2)
         		rdy <= 1'b1;
 		end
 	end
-	else if (rst == 1'b1)
+	else
 	begin
 		x <= 0;
         	y <= 0;

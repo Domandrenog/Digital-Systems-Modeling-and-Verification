@@ -18,7 +18,7 @@ module gcd_tb;
   	// Parameters
   	parameter CLK_PERIOD = 10;
   	parameter CICLES = 100;
-	parameter NBits = 26;
+	parameter NBits = 16;
 
   	// Inputs
   	reg [NBits-1:0] xi, yi;
@@ -119,6 +119,16 @@ module gcd_tb;
        		procedure(-18,-42);
       		//$display("  GCD(%d, %d) = %d", xi, yi, xo);
       		if (xo == 16'h6) $display("	Negative Numbers - Test case passed - Behavioral");
+      		else begin $display("	Negative Numbers - Test case failed: Expected %d, got %d - Behavioral", 16'h6, xo); totalerrorsbeh = totalerrorsbeh +1; end
+      		if (xo2 == 16'h6) $display("	Negative Numbers - Test case passed - RTL");
+      		else begin $display("	Negative Numbers - Test case failed: Expected %d, got %d - RTL", 16'h6, xo2); totalerrorsrtl = totalerrorsrtl +1; end
+		procedure(-18,42);
+		if (xo == 16'h6) $display("	Negative Numbers - Test case passed - Behavioral");
+      		else begin $display("	Negative Numbers - Test case failed: Expected %d, got %d - Behavioral", 16'h6, xo); totalerrorsbeh = totalerrorsbeh +1; end
+      		if (xo2 == 16'h6) $display("	Negative Numbers - Test case passed - RTL");
+      		else begin $display("	Negative Numbers - Test case failed: Expected %d, got %d - RTL", 16'h6, xo2); totalerrorsrtl = totalerrorsrtl +1; end
+		procedure(18,-42);
+		if (xo == 16'h6) $display("	Negative Numbers - Test case passed - Behavioral");
       		else begin $display("	Negative Numbers - Test case failed: Expected %d, got %d - Behavioral", 16'h6, xo); totalerrorsbeh = totalerrorsbeh +1; end
       		if (xo2 == 16'h6) $display("	Negative Numbers - Test case passed - RTL");
       		else begin $display("	Negative Numbers - Test case failed: Expected %d, got %d - RTL", 16'h6, xo2); totalerrorsrtl = totalerrorsrtl +1; end
