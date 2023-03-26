@@ -77,7 +77,7 @@ module gcd_rtl #(parameter NBits = 2)
 						xo <= 0;
 						rdy <= 1'b1;
 						next_state <= idle;
-						$display("rdy");
+						//$display("rdy");
 					end
 				end
 				calculate_gcd: 
@@ -99,7 +99,7 @@ module gcd_rtl #(parameter NBits = 2)
 						xo <= x; // Can be xo <= y;
 						rdy <= 1'b1;
 						next_state <= idle;
-						$display("rdy");
+						//$display("rdy");
 					end
 				end
 				default: 
