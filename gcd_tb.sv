@@ -74,7 +74,7 @@ module gcd_tb;
 		if (xo2 == 1) $display("	Prime Numbers - Test case passed - RTL");
       		else begin $display("	Prime Numbers - Test case failed: Expected 1, got %d - RTL", xo2); totalerrorsrtl = totalerrorsrtl +1; $fdisplay(fp2, "Test Case 1 - Error: gcd(%d, %d) = %d, expected 1 - RTL", xi, yi, xo); line_number3 = line_number3 + 1; end
     
-
+		
     		// Test case 2: Calculate GCD of  Equal Numbers - 65535 and 65535
     		$display("Test case 2 : Calculate GCD of Equal Numbers");
     		procedure(620,620);
@@ -232,7 +232,7 @@ module gcd_tb;
 			end
 
 		end
-
+		
 		$fclose(fp);
 		$fclose(fp1);
 		
@@ -270,9 +270,12 @@ module gcd_tb;
 
     		// Wait for a few clock cycles
     		# (CLK_PERIOD * 5) start = 1'b1;
-		
+
 		@(posedge rdy, posedge rdy2); // Both are at same time, I use the ",", because in this version works like a and (&)
 		
+		if(!rdy || !rdy2) @(posedge rdy, posedge rdy2); 
+
+		start = 1'b0;
 	end
 	endtask
 
