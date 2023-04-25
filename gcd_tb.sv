@@ -13,11 +13,19 @@ Types of tests:
 	Read from a file
 */
 
+class RandomNumber #(int NBits = 16);
+    	rand bit [NBits-1:0] ar;
+    	rand bit [NBits-1:0] br;
+
+    	constraint a_fixed { ar[NBits-1] == 0; } //All the times be positive
+	constraint b_fixed { br[NBits-1] == 0; }
+endclass 
+
 module gcd_tb;
 
   	// Parameters
   	parameter CLK_PERIOD = 10;
-  	parameter CICLES = 100;
+  	parameter CICLES = 10000;
 	parameter NBits = 16;
 
   	// Inputs
@@ -32,12 +40,29 @@ module gcd_tb;
 
 
   	//Random Case
-  	reg [NBits-2:0] a; //Only use 15 bits, because the 16 bit is to indicate its negative or positive
-  	reg [NBits-2:0] b;
+  	reg [NBits-1:0] a; //Only use 15 bits, because the 16 bit is to indicate its negative or positive, so in covergroup I need to ignore that
+  	reg [NBits-1:0] b;
+	RandomNumber #(NBits) randn;
+
   	reg [NBits-1:0] expected;
 	integer i;
   	integer totalerrorsrandombeh = 0;
   	integer totalerrorsrandomrtl = 0;
+
+	//Seeing how many inputs is cover in the random case -  Need to ignore the most significant bit because declre if it is positive or negative and in this case is all the times positive
+	covergroup dinput @(posedge clk); //See if have every input number - random
+  		pb1: coverpoint a[NBits-2:0];
+		pb2: coverpoint b[NBits-2:0];
+	endgroup
+
+	covergroup cinput @(posedge clk); // See if have every input with every input - random
+  		pb3: coverpoint a[NBits-2:0];
+		pb4: coverpoint b[NBits-2:0];
+		pb5: cross pb3,pb4;
+	endgroup
+
+	dinput dinput_inst;
+	cinput cinput_inst;
 
 	//Total of errors
   	integer totalerrorsbeh = 0;
@@ -53,10 +78,24 @@ module gcd_tb;
 	int val2;
 	int count;
 
+	//See if the output have every output possible between 0 to 1023
+	covergroup doutput @(posedge clk); // See if have every output possible - All cases, only focus between 0 and 1023 because after that is almost impossible to have cases, needs to be prime the number and equal
+  		pb6: coverpoint xo  
+		{
+            		bins MIN = {0};
+            		bins MID[1023] = {[1:1022]};
+            		bins MAX = {1023};
+         	}
+	endgroup
+
+	doutput doutput_inst;
 	
   	initial //Testing possible errors
 	begin
-		
+		dinput_inst = new();
+		doutput_inst = new();
+		cinput_inst = new();
+
 		fp2 = $fopen("errors.txt","w");
 		if(fp2) $display("Opened the file to save the errors!");
 		else 
@@ -137,11 +176,16 @@ module gcd_tb;
 
     		// Test case 7: Calculate GCD of Random Numbers
 		$display("Test case 7: Calculate GCD of %d Random Numbers", CICLES);
+		randn = new();
 		repeat (CICLES) 
     		begin
       			// Generate random input values
-      			a = $random;
-      			b = $random;
+			
+			randn.randomize();
+      			//a = $random;
+      			//b = $random;
+			a = randn.ar;
+			b = randn.br;
 			expected = 0;
       		
 			procedure(a, b);
